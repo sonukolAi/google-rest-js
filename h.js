@@ -3,7 +3,7 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 
 const app = express();
-const port = process.env.PORT || 3330;
+const port = process.env.PORT || 330;
 
 const sources = {
   '0': {
@@ -12,7 +12,7 @@ const sources = {
       const train = $('div.k9rLYb').eq(0).text().trim();
       const status = $('div.dK1Bub .rUtx7d').eq(1).text();
       const delay = $('div.Rjvkvf.MB86Dc').eq(1).text().trim();
-      const currentTime = new Date().toLocaleTimeString('en-US', { hour12: false, hour: 'numeric', minute: 'numeric' });
+      const currentTime = new Date().toLocaleTimeString('en-US', { timeZone: 'Asia/Kolkata', hour12: false, hour: 'numeric', minute: 'numeric' });
       res.json({ train, status, delay, currentTime });
     },
   },
@@ -21,7 +21,7 @@ const sources = {
     processData: ($, res) => {
       const train = $('head').text().replace('Live Train Running Status', '').trim();
       const station = $('.table-success').text().trim();
-      const currentTime = new Date().toLocaleTimeString('en-US', { hour12: false, hour: 'numeric', minute: 'numeric' });
+      const currentTime = new Date().toLocaleTimeString('en-US', { timeZone: 'Asia/Kolkata', hour12: false, hour: 'numeric', minute: 'numeric' });
       res.json({ train, station, currentTime });
     },
   },
@@ -30,7 +30,7 @@ const sources = {
     processData: ($, res) => {
       const train = $('head').text().replace('Live Train Running Status', '').trim();
       const station = $('.panel-heading').text().trim();
-      const currentTime = new Date().toLocaleTimeString('en-US', { hour12: false, hour: 'numeric', minute: 'numeric' });
+      const currentTime = new Date().toLocaleTimeString('en-US', { timeZone: 'Asia/Kolkata', hour12: false, hour: 'numeric', minute: 'numeric' });
       res.json({ train, station, currentTime });
     },
   },
@@ -39,7 +39,7 @@ const sources = {
     processData: ($, res) => {
       const train = $('head').text().replace('Live Train Running Status', '').trim();
       const station = $('.table-success').text().trim();
-      const currentTime = new Date().toLocaleTimeString('en-US', { hour12: false, hour: 'numeric', minute: 'numeric' });
+      const currentTime = new Date().toLocaleTimeString('en-US', { timeZone: 'Asia/Kolkata', hour12: false, hour: 'numeric', minute: 'numeric' });
       res.json({ train, station, currentTime });
     },
   },
