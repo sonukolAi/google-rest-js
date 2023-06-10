@@ -3,7 +3,7 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 
 const app = express();
-const port = process.env.PORT || 330;
+const port = process.env.PORT || 3330;
 
 const sources = {
   '0': {
@@ -12,37 +12,77 @@ const sources = {
       const train = $('div.k9rLYb').eq(0).text().trim();
       const status = $('div.dK1Bub .rUtx7d').eq(1).text();
       const delay = $('div.Rjvkvf.MB86Dc').eq(1).text().trim();
-      const currentTime = new Date().toLocaleTimeString('en-US', { timeZone: 'Asia/Kolkata', hour12: false, hour: 'numeric', minute: 'numeric' });
+      const currentTime = new Date().toLocaleTimeString('en-US', {
+        timeZone: 'Asia/Kolkata',
+        hour12: false,
+        hour: 'numeric',
+        minute: 'numeric',
+      });
       res.json({ train, status, delay, currentTime });
     },
   },
   '1': {
     url: (num) => `https://runningstatus.in/status/${num}`,
     processData: ($, res) => {
-      const train = $('head').text().replace('Live Train Running Status', '').trim();
+      const train = $('title').text().replace('Live Train Running Status', '').trim();
       const station = $('.table-success').text().trim();
-      const currentTime = new Date().toLocaleTimeString('en-US', { timeZone: 'Asia/Kolkata', hour12: false, hour: 'numeric', minute: 'numeric' });
-      res.json({ train, station, currentTime });
+      const delay = $('.table-success small').eq(1).text().trim();
+      const currentTime = new Date().toLocaleTimeString('en-US', {
+        timeZone: 'Asia/Kolkata',
+        hour12: false,
+        hour: 'numeric',
+        minute: 'numeric',
+      });
+      res.json({ train, station, delay, currentTime });
     },
   },
   '2': {
     url: (num) => `https://trainstatus.com/runningstatus/${num}`,
     processData: ($, res) => {
-      const train = $('head').text().replace('Live Train Running Status', '').trim();
-      const station = $('.panel-heading').text().trim();
-      const currentTime = new Date().toLocaleTimeString('en-US', { timeZone: 'Asia/Kolkata', hour12: false, hour: 'numeric', minute: 'numeric' });
-      res.json({ train, station, currentTime });
+      const train = $('.panel-heading h6').text().trim();
+      const station = $('.info').text().replace(/\s+/g, ' ').trim();
+      const delay = $('.panel-heading span').text().trim();
+      const currentTime = new Date().toLocaleTimeString('en-US', {
+        timeZone: 'Asia/Kolkata',
+        hour12: false,
+        hour: 'numeric',
+        minute: 'numeric',
+      });
+      res.json({ train, station, delay, currentTime });
     },
   },
   '3': {
     url: (num) => `https://spotyourtrain.com/trainstatus?train=${num}`,
     processData: ($, res) => {
-      const train = $('head').text().replace('Live Train Running Status', '').trim();
+      const train = $('.m-t-0').eq(0).text().trim();
       const station = $('.table-success').text().trim();
-      const currentTime = new Date().toLocaleTimeString('en-US', { timeZone: 'Asia/Kolkata', hour12: false, hour: 'numeric', minute: 'numeric' });
-      res.json({ train, station, currentTime });
+      const delay = $('.m-t-0 code').text().trim();
+      const currentTime = new Date().toLocaleTimeString('en-US', {
+        timeZone: 'Asia/Kolkata',
+        hour12: false,
+        hour: 'numeric',
+        minute: 'numeric',
+      });
+      res.json({ train, station, delay, currentTime });
     },
   },
+
+  '4': {
+    url: (num) => `https://www.railmitra.com/live-train-running-status/kte-et-pass-memu-spl-${num}`,
+    processData: ($, res) => {
+      const train = $('div h2 b').eq(1).text().trim();
+      const station = $('.row.text-center .col-12').text().replace(/(\r\n|\n|\r)/gm, '').trim();
+      const delay = $('.tl-msg.text-danger').eq(1).text().trim();
+      const currentTime = new Date().toLocaleTimeString('en-US', {
+        timeZone: 'Asia/Kolkata',
+        hour12: false,
+        hour: 'numeric',
+        minute: 'numeric',
+      });
+      res.json({ train, station, delay, currentTime });
+    },
+  },
+
 };
 
 app.get('/:num/:source', async (req, res) => {
@@ -53,7 +93,7 @@ app.get('/:num/:source', async (req, res) => {
       const url = selectedSource.url(num);
       const { data } = await axios.get(url, {
         headers: {
-          'User-Agent': 'Mozilla/5.0 (Linux; Android 11; Pixel 3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Mobile Safari/537.36',
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36',
         },
       });
       const $ = cheerio.load(data);
